@@ -1,4 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
 .App {
   font-family: sans-serif;
   text-align: center;
 }
+
+.login-container {
+  display: grid;
+  width: 100%;
+  height: 100vh;
+  grid-template-columns: 1fr 1.5fr;
+  grid-template-rows: 1fr;
+  padding: 0.5rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.input-container {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background-color: #00000010;
+  height: 2.5rem;
+}
+
+.img-container {
+  background-image: url("./assets/background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: aqua;
+  border-radius: 20px;
+}
+
+.form-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, auto);
+  justify-content: center;
+  align-items: start;
+  gap: 3rem;
+  width: 60%;
+}
+
+.form-group h1 {
+  font-size: 3.5rem;
+  font-weight: 500;
+}
+
+.form-group p {
+  font-size: 0.9rem;
+}
+
+.social-login,
+.divider {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.top-text {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  font-size: 0.8rem;
+  color: #00000080;
+}
+
+.top-text span {
+  color: #000;
+  font-size: bold;
+  cursor: pointer;
+}
+
+.main-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  width: 100%;
+  height: 2.5rem;
+}
+
+.social-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-btn img {
+  width: 1rem;
+  height: 1rem;
+}
+
+

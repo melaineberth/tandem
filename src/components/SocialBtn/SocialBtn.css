@@ -1,0 +1,23 @@
+.border-btn {
+    background-color: transparent;
+    color: black;
+    border: 1.5px solid #00000020;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    width: 100%;
+    height: 2.5rem;
+  }
+  
+  .border-btn img {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .logo-btn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+  }
