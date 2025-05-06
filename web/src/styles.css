@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@theme {
+  --font-display: "Inter", sans-serif;
+}
+
 * {
   margin: 0;
   padding: 0;

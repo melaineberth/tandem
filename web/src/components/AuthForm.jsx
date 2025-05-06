@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import InputText from "./InputText";
 import MainBtn from "./MainBtn";
 
-export default function AuthForm({ type, ...props }) {
+export default function AuthForm({ type, onChange, state, ...props }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   function togglePasswordVisibility() {
@@ -13,16 +13,17 @@ export default function AuthForm({ type, ...props }) {
 
   return (
     <form {...props}>
-      <InputText type="text" name="name" placeholder="Enter your name" />
-      <InputText type="email" name="email" placeholder="Enter your email" />
+      {state && <InputText onChange={onChange} type="text" name="name" placeholder="Enter your name" />}
+      <InputText onChange={onChange} type="email" name="email" placeholder="Enter your email" />
       <InputText
+        onChange={onChange}
         type={isPasswordVisible ? "text" : "password"}
         name="password"
         placeholder="Enter your password"
         isVisible={isPasswordVisible}
         onClick={togglePasswordVisibility}
       />
-      <MainBtn label="Get Started" type={type} />
+      <MainBtn label={state ? "Get Started" : "Continue"} type={type} />
     </form>
   );
 }
