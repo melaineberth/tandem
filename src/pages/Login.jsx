@@ -1,6 +1,8 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Divider from "../components/Divider/Divider";
 import SocialBtn from "../components/SocialBtn/SocialBtn";
+import AuthForm from "../components/AuthForm/AuthForm";
 import AppleLogo from "../assets/apple.png"; // Assurez-vous que le chemin est correct
 import GoogleLogo from "../assets/google.png"; // Assurez-vous que le chemin est correct
 
@@ -18,27 +20,22 @@ export default function Login() {
       <div className="img-container" />
       <div className="auth-form">
         <div className="form-group">
-          <h1>Sign in</h1>
-          <div className="social-login">
-            <p>Sign in with Open account</p>
-            <div className="social-btn">
-              <SocialBtn label="Google" path={GoogleLogo} />
-              <SocialBtn label="Apple" path={AppleLogo} />
-            </div>
+          <div className="form-title">
+            <h1>
+              Money should <br />
+              never be a conflict
+            </h1>
+            <p>Sign up to start your 30 days free trial</p>
           </div>
-          <div className="divider">
-            <p>Or continue with email address</p>
-            <form action="POST" onSubmit={handleLogin}>
-              <input className="input-container" type="text" name="email" />
-              <input className="input-container" type="text" name="password" />
-              <button className="main-btn" type="submit">
-                Get Started
-              </button>
-            </form>
+          <div className="social-btn">
+            <SocialBtn label="Google" path={GoogleLogo} />
+            <SocialBtn label="Apple" path={AppleLogo} />
           </div>
+          <Divider>or</Divider>
+          <AuthForm type="submit" action="POST" onSubmit={handleLogin} />
         </div>
         <p className="top-text">
-          Don't have an account ? <span>Sign up</span>
+          Already have an account ? <span>Sign in</span>
         </p>
       </div>
     </div>

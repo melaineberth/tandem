@@ -1,0 +1,42 @@
+.input-container {
+  width: 100%;
+}
+
+h2 {
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  font-weight: 500;
+  color: #000000;
+  padding-bottom: 0.4rem;
+}
+
+h2 span {
+  color: #ff4444;
+}
+
+.input-field {
+  display: flex;
+  border: 1.5px solid #00000040;
+  border-radius: 12px;
+  background-color: transparent;
+  padding: 1rem 1rem;
+  justify-content: space-between;
+  height: 3.5rem;
+}
+
+.input-field input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+button svg {
+  vertical-align: middle;
+}

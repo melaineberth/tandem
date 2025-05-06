@@ -31,6 +31,9 @@ typings/
 *.tgz
 
 # Yarn Integrity file
+.npmrc
+
+# Yarn Integrity file
 .yarn-integrity
 
 # misc
