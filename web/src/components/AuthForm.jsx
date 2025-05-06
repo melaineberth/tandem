@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import InputText from "../InputText/InputText";
-import MainBtn from "../MainBtn/MainBtn";
+import InputText from "./InputText";
+import MainBtn from "./MainBtn";
 
 export default function AuthForm({ type, ...props }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
