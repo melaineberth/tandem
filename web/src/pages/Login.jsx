@@ -13,7 +13,7 @@ export default function Login() {
 
   const handleLogin = () => {
     login({ name: "John Doe" }); // Ex. simple
-    navigate("/dashboard"); // Redirection vers le tableau de bord
+    navigate("/"); // Redirection vers le tableau de bord
   };
 
   return (
@@ -36,7 +36,7 @@ export default function Login() {
           <AuthForm type="submit" action="POST" onSubmit={handleLogin} />
         </div>
         <p className="top-text">
-          Already have an account ? <span>Sign in</span>
+          Already have an account ? <button onClick={handleLogin}><span>Sign in</span></button>
         </p>
       </div>
     </div>
