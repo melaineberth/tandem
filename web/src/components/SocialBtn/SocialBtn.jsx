@@ -1,3 +1,4 @@
+import React from 'react';
 import "./SocialBtn.css";
 
 export default function SocialBtn({label, path}) {

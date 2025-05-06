@@ -1,3 +1,4 @@
+import React from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ViewIcon } from '@hugeicons-pro/core-solid-rounded';
 import { ViewOffIcon } from '@hugeicons-pro/core-solid-rounded';

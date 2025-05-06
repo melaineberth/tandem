@@ -1,3 +1,4 @@
+import React from 'react';
 import "./MainBtn.css";
 
 export default function MainBtn({ label, type }) {
