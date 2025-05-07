@@ -13,7 +13,7 @@ export default function AuthForm({ type, onChange, state, ...props }) {
 
   return (
     <form {...props}>
-      {state && <InputText onChange={onChange} type="text" name="name" placeholder="Enter your name" />}
+      {state && <InputText onChange={onChange} type="text" name="username" placeholder="Enter your username" />}
       <InputText onChange={onChange} type="email" name="email" placeholder="Enter your email" />
       <InputText
         onChange={onChange}

@@ -28,7 +28,7 @@ export default function useAuthForm(apiBaseUrl) {
   // Fonction d'inscription
   async function signUp(user) {
     try {
-      const res = await fetch(`${API_BASE}/api/signup`, {
+      const res = await fetch(`${apiBaseUrl}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

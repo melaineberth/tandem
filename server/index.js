@@ -78,11 +78,11 @@ app.post('/api/login', (req, res, next) => {
 
 // Exemple de route API
 app.post('/api/signup', async (req, res) => {
-  const name = req.body.name;
+  const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
 
-  console.log('Name :', name)
+  console.log('Name :', username)
   console.log('Email :', email)
   console.log('Password :', password)
 
@@ -99,8 +99,8 @@ app.post('/api/signup', async (req, res) => {
           console.error("Error hashing password:", err);
         } else {
           const result = await db.query(
-            "INSERT INTO users (email, password, name, created_at, updated_at, is_premium, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-            [email, hash, name, new Date(), new Date(), false, new Date()]
+            "INSERT INTO users (email, password, username, created_at, updated_at, is_premium, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [email, hash, username, new Date(), new Date(), false, new Date()]
           );
           const user = result.rows[0];
           req.login(user, (err) => {

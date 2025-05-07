@@ -57,7 +57,7 @@ export default function Login() {
 
           {/* Titre du formulaire, qui change selon le mode */}
           <AuthTitle
-            title={isSignIn ? "Money should never be a conflict" : "Reconnect with harmony"}
+            title={isSignIn ? "Money should\n never be a conflict" : "Reconnect\n with harmony"}
             subtitle={ isSignIn ? "Sign up to start your 30 days free trial" : "Let’s keep your finances flowing"}
           />
 
