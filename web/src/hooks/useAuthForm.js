@@ -51,7 +51,7 @@ export default function useAuthForm() {
       timer.current = setTimeout(() => {
         // Sauvegarde l'utilisateur dans le contexte et redirige vers la page d’accueil
         login(data.user, data.token);
-        navigate("/create-profile");
+        navigate("/onboarding");
         setIsLoading(false);
       }, 2000);
     } catch (error) {
@@ -79,7 +79,7 @@ export default function useAuthForm() {
       timer.current = setTimeout(() => {
         // Sauvegarde l'utilisateur dans le contexte et redirige vers la page d’accueil
         login(data.user, data.token);
-        navigate("/");
+        navigate("/dashboard");
         setIsLoading(false);
       }, 2000);
     } catch (error) {

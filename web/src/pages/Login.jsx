@@ -6,6 +6,9 @@ import SocialBtn from "../components/SocialBtn";
 import AuthForm from "../components/AuthForm";
 import AuthTitle from "../components/AuthTitle";
 import AuthState from "../components/AuthState";
+import IconBtn from "../components/IconBtn";
+
+// Import du contexte d'authentification
 import useAuthForm from "../hooks/useAuthForm";
 
 // Import des ressources (logos et background image)
@@ -16,8 +19,12 @@ import Background from "../assets/background.jpg";
 // Import de l’animation Lottie
 import Lottie from "@lottielab/lottie-player/react";
 import Alert from '@mui/material/Alert';
+import { ArrowLeft02Icon } from '@hugeicons-pro/core-stroke-sharp';
+
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate(); // hook pour naviguer programmé
   const [isSignIn, setIsSignIn] = useState(true); // Détermine si l'on est en mode "sign in" ou "sign up"
   const { formData, error, isLoading, handleChange, signUp, signIn } = useAuthForm();
 
@@ -32,15 +39,19 @@ export default function Login() {
     setIsSignIn((prev) => !prev);
   }
 
+  function handleBack() {
+    console.log("Back to website");
+    // Redirige vers la page d'accueil
+    navigate("/");
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-2 sm:grid-rows-1 h-screen w-auto p-4">
       {/* Colonne gauche avec image de fond + animation Lottie */}
-      <div
-        className="bg-cover bg-no-repeat rounded-3xl"
-        style={{ backgroundImage: `url(${Background})` }}
-      >
+      <div className="bg-cover bg-no-repeat rounded-[40px]" style={{ backgroundImage: `url(${Background})` }}>
+        <IconBtn onClick={handleBack} style={{position: "absolute", top: 35, left: 35}} icon={ArrowLeft02Icon} label="Back to website" />
         <Lottie
-          className="w-full h-full"
+          className="w-full h-full pointer-events-none"
           src="https://cdn.lottielab.com/l/5WSrkiEqcdwzrs.json"
           autoplay
         />
