@@ -3,9 +3,7 @@ import cors from 'cors';
 import env from 'dotenv';
 import pg from "pg";
 import bcrypt from "bcrypt";
-import passport from "passport";
-import { Strategy } from "passport-local";
-import session from "express-session";
+import jwt from 'jsonwebtoken';
 import GoogleStrategy from "passport-google-oauth2";
 
 env.config();
@@ -18,15 +16,6 @@ app.use(cors({
   credentials: true               // utile si cookies/token
 }));
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false, httpOnly: true, sameSite: 'lax' },
-  })
-);
-
 // Middleware pour parser le corps des requêtes JSON
 app.use(express.json());
 
@@ -35,9 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware pour servir les fichiers statiques
 app.use(express.static('public'));
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 const db = new pg.Client({
   user: process.env.PG_USER,
@@ -49,42 +35,62 @@ const db = new pg.Client({
 
 db.connect();
 
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: "Not authenticated" });
-}
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
 
-app.get('/api/protected', isAuthenticated, (req, res) => {
-  res.json({ message: "Secret data" });
-});
+  jwt.verify(token, process.env.JWT_SECRET, { issuer: 'tandem', audience: 'tandem-client' }, (err, user) => {
+    if (err) {
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token expired' });
+      } else if (err.name === 'JsonWebTokenError') {
+        return res.status(403).json({ error: 'Invalid token' });
+      } else {
+        return res.status(500).json({ error: 'Token verification failed' });
+      }
+    }
+
+    req.user = user;
+    next();
+  });
+}
 
 app.get('/', (req, res) => {
   res.send('Backend Budgeta OK 🚀')
 });
 
-app.post('/api/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) return res.status(500).json({ error: err });
-    if (!user) return res.status(401).json({ error: "Invalid email or password" });
+app.get('/api/protected', authenticateToken, (req, res) => {
+  res.json({ message: "Secret data", user: req.user });
+});
 
-    req.login(user, (err) => {
-      if (err) return res.status(500).json({ error: "Login error" });
-      return res.status(200).json({ user });
-    });
-  })(req, res, next);
+app.get('/api/me', authenticateToken, async (req, res) => {
+  const result = await db.query("SELECT id, email FROM users WHERE id = $1", [req.user.id]);
+  res.json(result.rows[0]);
+});
+
+app.post('/api/login', async (req, res, next) => {
+  const { email, password } = req.body;
+  const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+  const user = result.rows[0];
+
+  if (!user) return res.status(401).json({ error: "User not found" });
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return res.status(401).json({ error: "Invalid email or password" });
+
+  const token = jwt.sign(
+    { id: user.id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d', issuer: 'tandem', audience: 'tandem-client' }
+  );
+
+  res.json({ token, user: { id: user.id, email: user.email } });
 });
 
 // Exemple de route API
 app.post('/api/signup', async (req, res) => {
-  const username = req.body.username;
-  const email = req.body.email;
-  const password = req.body.password;
-
-  console.log('Name :', username)
-  console.log('Email :', email)
-  console.log('Password :', password)
+  const { fName, lName, email, password } = req.body;
 
   try {
     const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -99,60 +105,19 @@ app.post('/api/signup', async (req, res) => {
           console.error("Error hashing password:", err);
         } else {
           const result = await db.query(
-            "INSERT INTO users (email, password, username, created_at, updated_at, is_premium, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-            [email, hash, username, new Date(), new Date(), false, new Date()]
+            "INSERT INTO users (email, password, first_name, last_name, created_at, updated_at, is_premium, last_login) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+            [email, hash, fName, lName, new Date(), new Date(), false, new Date()]
           );
           const user = result.rows[0];
-          req.login(user, (err) => {
-            if (err) return res.status(500).json({ error: "Login error" });
-            return res.status(201).json({ user });
-          });
+
+          const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '7d', issuer: 'tandem', audience: 'tandem-client' });
+          res.status(201).json({ token, user: { id: user.id, email: user.email } });
         }
       });
     }
   } catch (error) {
     res.status(500).json({ error: 'Internal error' });
   }
-});
-
-passport.use(
-  new Strategy(async function verify(email, password, cb) {
-    try {
-      const result = await db.query("SELECT * FROM users WHERE email = $1 ", [
-        email,
-      ]);
-      if (result.rows.length > 0) {
-        const user = result.rows[0];
-        const storedHashedPassword = user.password;
-        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
-          if (err) {
-            //Error with password check
-            console.error("Error comparing passwords:", err);
-            return cb(err);
-          } else {
-            if (valid) {
-              //Passed password check
-              return cb(null, user);
-            } else {
-              //Did not pass password check
-              return cb(null, false);
-            }
-          }
-        });
-      } else {
-        return cb("User not found");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  })
-);
-
-passport.serializeUser((user, cb) => cb(null, user.id));
-
-passport.deserializeUser(async (id, cb) => {
-  const result = await db.query('SELECT * FROM users WHERE id = $1', [id]);
-  cb(null, result.rows[0]);
 });
 
 app.listen(PORT, () => {

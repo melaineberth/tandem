@@ -1,20 +1,26 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function useAuthForm(apiBaseUrl) {
+export default function useAuthForm() {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001"; // URL de l’API backend (défaut en local)
   const { login } = useAuth(); // méthode pour connecter un utilisateur via le contexte
   const navigate = useNavigate(); // hook pour naviguer programmé
-
-  // Données du formulaire utilisateur
   const [formData, setFormData] = useState({
-    name: "",
+    fName: "",
+    lName: "",
     email: "",
     password: "",
-  });
+  }); // Données du formulaire utilisateur
+  const [error, setError] = useState(null); // État pour afficher les erreurs côté UI
+  const [isLoading, setIsLoading] = useState(false);
+  const timer = React.useRef(undefined);
 
-  // État pour afficher les erreurs côté UI
-  const [error, setError] = useState(null);
+  React.useEffect(() => {
+    return () => {
+      clearTimeout(timer.current);
+    };
+  }, []);
 
   // Mise à jour des données du formulaire au fur et à mesure de la saisie
   function handleChange(event) {
@@ -27,13 +33,13 @@ export default function useAuthForm(apiBaseUrl) {
 
   // Fonction d'inscription
   async function signUp(user) {
+    setIsLoading(true);
     try {
-      const res = await fetch(`${apiBaseUrl}/api/signup`, {
+      const res = await fetch(`${API_BASE}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Inclut les cookies, utile pour la gestion de session
         body: JSON.stringify(user),
       });
 
@@ -42,9 +48,12 @@ export default function useAuthForm(apiBaseUrl) {
       // En cas d'erreur, déclenche une exception
       if (!res.ok) throw new Error(data.error || "Unknown error");
 
-      // Sauvegarde l'utilisateur dans le contexte et redirige vers la page d’accueil
-      login(data.user);
-      navigate("/");
+      timer.current = setTimeout(() => {
+        // Sauvegarde l'utilisateur dans le contexte et redirige vers la page d’accueil
+        login(data.user, data.token);
+        navigate("/create-profile");
+        setIsLoading(false);
+      }, 2000);
     } catch (error) {
       // Affiche l’erreur dans le composant
       setError(error.message);
@@ -53,13 +62,13 @@ export default function useAuthForm(apiBaseUrl) {
 
   // Fonction à implémenter pour la connexion
   async function signIn(user) {
+    setIsLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Pour envoyer le cookie de session
         body: JSON.stringify(user),
       });
 
@@ -67,8 +76,12 @@ export default function useAuthForm(apiBaseUrl) {
 
       if (!res.ok) throw new Error(data.error || "Login failed");
 
-      login(data.user); // Stocke l'utilisateur dans ton AuthContext
-      navigate("/");
+      timer.current = setTimeout(() => {
+        // Sauvegarde l'utilisateur dans le contexte et redirige vers la page d’accueil
+        login(data.user, data.token);
+        navigate("/");
+        setIsLoading(false);
+      }, 2000);
     } catch (error) {
       setError(error.message);
     }
@@ -77,6 +90,7 @@ export default function useAuthForm(apiBaseUrl) {
   return {
     formData,
     error,
+    isLoading,
     handleChange,
     signUp,
     signIn,
